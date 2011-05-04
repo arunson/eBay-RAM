@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+
 from cs130.eram.forms import SearchForm
 import json, urllib
     
@@ -32,4 +33,3 @@ def search(request):
 	else:
 		search_form = SearchForm()
 	return render_to_response('search.html', {'search_form': search_form})
-
