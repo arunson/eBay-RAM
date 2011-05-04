@@ -12,6 +12,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns = patterns('', 
     (r'^$', search),
     (r'^search/$', search),
+    (r'^ip-location/$', ip_location),
 )
 
     # Examples:
