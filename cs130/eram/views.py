@@ -35,7 +35,7 @@ def search(request):
 
 def ip_location(request):
     ip = request.META['REMOTE_ADDR']
-    api_key = "fc2d03190d33742407160edbcefd3749d8561cdcb4ac90ccad6e062dac16bb3c"
+    api_key = ""
     url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&ip=" + ip + "&format=json"
 
     ipdb_response = urllib.urlopen(url)
