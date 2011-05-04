@@ -1,3 +1,5 @@
-Initial readme!
+eBay Review Aggregator and Matcher
 
-This will be populated with actual information in the near future.
+The eBay Review Aggregator and Matcher (eRAM) is a web mashup that aims to simplify the task of finding quality items on eBay, specifically in the Consumer Electronics category. By taking into account product reviews on third party websites the application will be able to reorder a user's search so products with the best reviews are near the top. In addition, search results will be placed onto a map so that the user can easily visualize the locations of the items.
+
+This mashup uses Django as its development framework. More information on usage will be posted in the future.
