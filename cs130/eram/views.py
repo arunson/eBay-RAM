@@ -1,6 +1,5 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
-
 from cs130.eram.forms import SearchForm
 import json, urllib
     
@@ -33,3 +32,24 @@ def search(request):
 	else:
 		search_form = SearchForm()
 	return render_to_response('search.html', {'search_form': search_form})
+
+def ip_location(request):
+    ip = request.META['REMOTE_ADDR']
+    api_key = "fc2d03190d33742407160edbcefd3749d8561cdcb4ac90ccad6e062dac16bb3c"
+    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&ip=" + ip + "&format=json"
+
+    ipdb_response = urllib.urlopen(url)
+
+    location_info = json.loads(ipdb_response.read())
+
+    #my_ip = location_info["ipAddress"]
+    #country = location_info["countryName"]
+    #region = location_info["regionName"]
+    #city = location_info["cityName"]
+    #zip = location_info["zipCode"]
+    #latitude = location_info["latitude"]
+    #longitute = location_info["longitude"]
+    #time_zone = location_info["timeZone"]
+    
+    return render_to_response('ip_location.html', location_info)
+
