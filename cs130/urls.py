@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from cs130.eram.views import search
+from cs130.eram.views import search, ip_location
 
 
 # QUICK AND DIRTY IMPORT FOR DEV ENVIRONMENTS TO SERVE STATIC FILES
