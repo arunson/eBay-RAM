@@ -47,10 +47,24 @@ li {
   margin: 0 auto;
 }
 
+.logo-large {
+  float: left;
+}
+
+.search-form {
+  float: right;
+  margin-top: 50px;
+  overflow: margin;
+}
+
 .search-box {
   width: 500px;
   font-size: 18px;
   height: 30px;
+}
+
+.home-box {
+  margin: 0 auto;
 }
 
 /* Rounded Boxes */

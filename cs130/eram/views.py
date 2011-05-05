@@ -19,7 +19,7 @@ def search(request):
 			result += "<p>"
 		return HttpResponse(result)
 	else:
-		search_form = SearchForm()
+		search_form = SearchForm()['q']
 	return render_to_response('search.html', {'search_form': search_form})
 
 def ip_location(request):
