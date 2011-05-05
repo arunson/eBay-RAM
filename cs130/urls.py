@@ -1,9 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from cs130.eram.views import search, ip_location
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/master
 
 # QUICK AND DIRTY IMPORT FOR DEV ENVIRONMENTS TO SERVE STATIC FILES
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
