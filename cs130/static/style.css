@@ -122,6 +122,12 @@ li {
   overflow: hidden;
 }
 
+/* Map */
+#map-canvas {
+  width: 100%;
+  height: 500px;
+}
+
 /* Rounded Boxes */
 
 .rounded-all {
