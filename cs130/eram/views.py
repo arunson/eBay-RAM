@@ -3,24 +3,38 @@ from django.shortcuts import render_to_response
 from cs130.eram.forms import SearchForm
 from cs130.eram.other_modules import ebay_module
 import os
+import datetime
     
 def search(request):
-	if 'q' in request.GET and request.GET['q']:
-		ebay_communicator = ebay_module.EbayInterface(os.getcwd() + '/eram/module_config.cfg')
-		item_ids = ebay_communicator.search(request.GET['q'], 20)
-		result = "Results: <p>"
-		for item_id in item_ids :
-			item_info = ebay_communicator.get_item_info_by_id(item_id)
-			try:
-				result += "<img src=\"" + item_info["galleryURL"] + "\"\\>"
-			except KeyError:
-				result += "NO PIC"
-			result += "    <a href=\"" + item_info["viewItemURL"] + "\">" + item_info["title"] + "</a>"
-			result += "<p>"
-		return HttpResponse(result)
-	else:
-		search_form = SearchForm()['q']
-	return render_to_response('search.html', {'search_form': search_form})
+    if 'q' in request.GET and request.GET['q']:
+        ebay_communicator = ebay_module.EbayInterface(os.getcwd() + '/eram/module_config.cfg')
+        item_ids = ebay_communicator.search(request.GET['q'], 20)
+
+        # This list will be passed to results.html
+        item_list = []
+
+        for item_id in item_ids :
+            item_info = ebay_communicator.get_item_info_by_id(item_id)
+
+            # Templates cannot handle variable names with leading @ or _
+            item_info["sellingStatus"]["currentPrice"]["value"] = item_info["sellingStatus"]["currentPrice"]["__value__"]
+            item_info["sellingStatus"]["currentPrice"]["currencyId"] = item_info["sellingStatus"]["currentPrice"]["@currencyId"]
+
+            #item_info["sellingStatus"]["currentPrice"] = datetime.datetime.strptime(item_info["sellingStatus"]["timeLeft"], "P%dDT%HH%MM%SS")
+
+            item_list.append(item_info)
+
+        template_variables = dict()
+        template_variables['search_query'] = request.GET['q']
+        template_variables['item_list'] = item_list
+
+        search_form = SearchForm()['q']
+        template_variables['search_form'] = search_form
+
+        return render_to_response('results.html', template_variables)
+    else:
+        search_form = SearchForm()['q']
+        return render_to_response('search.html', {'search_form': search_form})
 
 def ip_location(request):
     ip = request.META['REMOTE_ADDR']

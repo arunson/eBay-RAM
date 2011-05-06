@@ -1,0 +1,40 @@
+{% extends "application.html" %}
+
+{% load static %}
+
+{% block title %}Search results for {{search_query}} {% endblock %}
+
+{% block content %}
+<div class="main-search-box">
+  <img src="{% get_static_prefix %}logo_large.png" class="logo-large" />
+  <div class="search-box">
+    <form action="/search" method="get" class="search-form">
+      {{ search_form }}
+      <input type="submit" value="Search" class="search-button">
+    </form>
+  </div>
+</div>
+
+<div id="results-wrapper" class="rounded-all">
+  <h1>Search results for "{{search_query}}"</h1>
+  <div class="results">
+  {% for item in item_list %}
+    <div class="item">
+      <div class="item-image">
+        <img src="{{item.galleryURL}}" />
+      </div>
+
+      <div class="item-info">
+        <h2><a href="{{item.viewItemURL}}">{{item.title}}</a><br/></h2>
+        Location: {{item.location}} <br/><br/>
+        <b>
+        Current Price: {{item.sellingStatus.currentPrice.value}} {{item.sellingStatus.currentPrice.currencyId}} <br/>
+        Time Left: {{item.sellingStatus.timeLeft}}
+        </b>
+      </div>
+    </div>
+
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}

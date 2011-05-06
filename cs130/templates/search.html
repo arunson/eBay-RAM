@@ -2,18 +2,18 @@
 
 {% load static %}
 
-{% block title %}Welcome to eRAM{% endblock %}
+{% block title %}eRAM{% endblock %}
 
 {% block content %}
 
-<div class="home-box">
-<img src="{% get_static_prefix %}logo_large.png" class="logo-large" />
-<div class="search-form">
-  <form action="/search" method="get">
-    {{ search_form }}
-    <input type="submit" value="Search">
-  </form>
-</div>
+<div class="main-search-box">
+  <img src="{% get_static_prefix %}logo_large.png" class="logo-large" />
+  <div class="search-box">
+    <form action="/search" method="get" class="search-form">
+      {{ search_form }}
+      <input type="submit" value="Search" class="search-button">
+    </form>
+  </div>
 </div>
 
 {% endblock %}
