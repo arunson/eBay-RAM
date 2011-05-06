@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from cs130.eram.forms import SearchForm
-from cs130.eram.other_modules import ebay_module
+from cs130.eram.other_modules import ebay_module, ipinfo_module
 import os
 import datetime
     
@@ -37,7 +37,10 @@ def search(request):
         return render_to_response('search.html', {'search_form': search_form})
 
 def ip_location(request):
-    ip = request.META['REMOTE_ADDR']
+	
+    ipinfo_communicator = ipinfo_module.IpInfoInterface(os.getcwd() + '/eram/module_config.cfg')
+    location_info = ipinfo_communicator.get_ip_info(request.META['REMOTE_ADDR'])
+    """
     api_key = ""
     url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&ip=" + ip + "&format=json"
 
@@ -54,4 +57,5 @@ def ip_location(request):
     #longitute = location_info["longitude"]
     #time_zone = location_info["timeZone"]
     
+	"""
     return render_to_response('ip_location.html', location_info)
