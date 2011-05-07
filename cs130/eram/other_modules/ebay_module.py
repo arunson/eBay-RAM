@@ -1,5 +1,7 @@
 import json, urllib, ConfigParser
 class EbayInterface:
+	# __init__(self, config_location)
+	# input: location of configuration file
 	def __init__(self, config_location):
 		config = ConfigParser.ConfigParser()
 		config.read(config_location)
@@ -10,6 +12,12 @@ class EbayInterface:
 		self.global_id = config.get('EBAY API', 'global_id')
 		self.response_format = config.get('EBAY API', 'response_format')
 			
+	# __unlist(self, data)
+	# input: data in json format returned by ebay api call
+	# output: same data, all lists of 1 length changed to the containing item
+	# reason: without it, there is a need to use [0] a lot when trying
+	# to access ebay information
+	# ---not tested thoroughly---
 	def __unlist(self, data):
 		if (isinstance(data, list) and (len(data) == 1)):
 			return self.__unlist(data[0])
@@ -22,6 +30,11 @@ class EbayInterface:
 		else:
 			return data
 		
+	# search(self, request, num_responses)
+	# input: search term, max number of responses that should be returned by ebay
+	# output: list of item ids for each item returned by the api call
+	# ---not robust---
+	# ---could do with refactoring, etc---
 	def search(self, request, num_responses):
 		query = urllib.quote(request)
 	
@@ -96,5 +109,10 @@ class EbayInterface:
 		buyItNowAvailable
 		endTime
 	"""
+	# get_item_info_by_id(self, item_id)
+	# input: item id previously returned by ebay's api via search
+	# output: json formatted information for that item
+	# reason: access to ebay information
+	# ---could do with refactoring, etc---
 	def get_item_info_by_id(self, item_id) :
 		return self.item_dict[item_id]
