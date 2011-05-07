@@ -6,7 +6,7 @@ class EbayInterface:
 		# caller must handle incorrect configuration location
 		self.api_site = config.get('EBAY API', 'api_site')
 		self.version = config.get('EBAY API', 'version')
-		self.app_id = config.get('EBAY API', 'app_id')
+		self.app_id = config.get('EBAY API', 'api_key')
 		self.global_id = config.get('EBAY API', 'global_id')
 		self.response_format = config.get('EBAY API', 'response_format')
 			

@@ -4,6 +4,10 @@ from cs130.eram.forms import SearchForm
 from cs130.eram.other_modules import ebay_module, ipinfo_module
 import os
 import datetime
+# ip-location
+import urllib
+import json
+import ConfigParser
     
 def search(request):
     if 'q' in request.GET and request.GET['q']:
@@ -37,17 +41,26 @@ def search(request):
         return render_to_response('search.html', {'search_form': search_form})
 
 def ip_location(request):
-	
-    ipinfo_communicator = ipinfo_module.IpInfoInterface(os.getcwd() + '/eram/module_config.cfg')
-    location_info = ipinfo_communicator.get_ip_info(request.META['REMOTE_ADDR'])
-    """
-    api_key = ""
-    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&ip=" + ip + "&format=json"
-
+    #ip = request.META['REMOTE_ADDR']
+#    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&ip=" + ip + "&format=json"
+    
+    config = ConfigParser.ConfigParser()
+    config.read(os.getcwd() + '/eram/module_config.cfg')
+    
+    api_key = config.get('LOCATION API', 'api_key')
+    
+    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&format=json"
+    
     ipdb_response = urllib.urlopen(url)
 
     location_info = json.loads(ipdb_response.read())
 
+    search_form = SearchForm()['q']
+    template_variables = dict()
+    template_variables['search_form'] = search_form
+    template_variables['location_info'] = location_info
+    
+    
     #my_ip = location_info["ipAddress"]
     #country = location_info["countryName"]
     #region = location_info["regionName"]
@@ -57,5 +70,4 @@ def ip_location(request):
     #longitute = location_info["longitude"]
     #time_zone = location_info["timeZone"]
     
-	"""
-    return render_to_response('ip_location.html', location_info)
+    return render_to_response('ip_location.html', template_variables)
