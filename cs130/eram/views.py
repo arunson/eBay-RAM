@@ -8,7 +8,7 @@ import datetime
 import urllib
 import json
 import ConfigParser
-    
+
 def search(request):
     if 'q' in request.GET and request.GET['q']:
         ebay_communicator = ebay_module.EbayInterface(os.getcwd() + '/eram/module_config.cfg')
