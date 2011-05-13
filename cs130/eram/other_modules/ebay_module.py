@@ -68,47 +68,47 @@ class EbayInterface:
 			
 		return id_list 
 	
-	"""
-	globalId
-	title
-	country
-	shippingInfo
-		expeditedShipping
-		handlingTime
-		shippingServiceCost
-		oneDayShippingAvaiilable
-		shipToLocations
-		shippingType
-	galleryURL
-	autoPay
-	location
-	postalCode
-	returnsAccepted
-	viewItemURL
-	sellingStatus
-		currentPrice
-			@currencyId
-			__value__
-		timeLeft
-		convertedCurrentPrice
-			@currencyId
-			__value__
-		sellingState
-	paymentMethod
-	primaryCategory
-		categoryID
-		categoryName
-	condition
-		conditionID
-		conditionDisplayName
-	listingInfo
-		listingType
-		gift
-		bestOfferEnabled
-		startTime
-		buyItNowAvailable
-		endTime
-	"""
+	
+	# globalId
+	# title
+	# country
+	# shippingInfo
+		# expeditedShipping
+		# handlingTime
+		# shippingServiceCost
+		# oneDayShippingAvaiilable
+		# shipToLocations
+		# shippingType
+	# galleryURL
+	# autoPay
+	# location
+	# postalCode
+	# returnsAccepted
+	# viewItemURL
+	# sellingStatus
+		# currentPrice
+			# @currencyId
+			# __value__
+		# timeLeft
+		# convertedCurrentPrice
+			# @currencyId
+			# __value__
+		# sellingState
+	# paymentMethod
+	# primaryCategory
+		# categoryID
+		# categoryName
+	# condition
+		# conditionID
+		# conditionDisplayName
+	# listingInfo
+		# listingType
+		# gift
+		# bestOfferEnabled
+		# startTime
+		# buyItNowAvailable
+		# endTime
+	
 	# get_item_info_by_id(self, item_id)
 	# input: item id previously returned by ebay's api via search
 	# output: json formatted information for that item
