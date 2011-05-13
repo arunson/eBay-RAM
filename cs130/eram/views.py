@@ -41,7 +41,7 @@ def search(request):
             # modules work and needs to be refactored and whatnot
             for mod in mod_list :
                 exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
-                (score, number_reviews) = mod_communicator.get_score(item_info["title"])
+                (score, number_reviews) = mod_communicator.get_score(item_info["title"], "title")
                 scores.append((score, number_reviews))	
 				
         template_variables = dict()
