@@ -28,8 +28,7 @@
 <body onload="initialize({{location_info.latitude}}, {{location_info.longitude}})">
 {% endblock %}
 
-
-{% block content %}
+{% block header %}
 <div class="main-search-box">
   <img src="{% get_static_prefix %}logo_large.png" class="logo-large" />
   <div class="search-box">
@@ -39,8 +38,12 @@
     </form>
   </div>
 </div>
+{% endblock %}
 
-<div id="results-wrapper" class="rounded-all">
+
+{% block content %}
+
+<div id="results-wrapper" class="box-shadow">
   <div id="map-canvas"></div>
 
   My IP: {{location_info.ipAddress}}

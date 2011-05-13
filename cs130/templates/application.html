@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <title>{% block title %}{% endblock %}</title>
+  
   {% load static %}
   <link rel="stylesheet" href="{% get_static_prefix %}style.css" type="text/css"> 
 
@@ -9,18 +10,23 @@
 
 </head>
 
-{% block body-tag %}
-<body>
-{% endblock %}
+{% block body-tag %}<body>{% endblock %}
 
-<div id="page-wrapper">
-  <div id="main-content">
-    {% block content %} {% endblock %}
-  </div>
+  <div id="page-wrapper">
+
+    <div id="header" class="box-shadow">
+      {% block header %} {% endblock %}
+    </div>
+      
+    <div id="main-content">
+      {% block content %} {% endblock %}
+    </div>
+    
+    <div id="footer">
+      {% block footer %} {% endblock %}
+    </div>
+    
+  </div> <!-- page-wrapper -->
   
-  <div id="footer">
-  </div>
-  
-</div>
 </body>
 </html>

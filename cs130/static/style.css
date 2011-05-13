@@ -1,7 +1,7 @@
 *{ margin:0; padding:0; }
 
 body {
-  background: #93a9e9;
+  background: #eeeeee;
   color: #333; 
 }
 
@@ -47,25 +47,32 @@ li {
   padding: 0px;
 }
 
+#header {
+  background-color: #26466D;
+  margin-bottom: 15px;
+}
+
 #footer {
+  background-color: #26466D;
+  min-height: 150px;
 }
 
 #main-content {
   height: 100%;
-  width: 1000px;
   margin: 0 auto;
+  background-color: #eeeeee;
 }
 
 
 /* Front Page */
 .logo-large {
   float: left;
-  width: 275px;
+  width: 200px;
 }
 
 .search-box {
   float: right;
-  margin-top: 40px;
+  margin-top: 20px;
   overflow: margin;
 }
 
@@ -76,8 +83,9 @@ li {
 }
 
 .main-search-box {
-  margin: auto;
+  width: 1000px;
   height: 100%;
+  margin: auto;
   overflow: auto;
 }
 
@@ -98,6 +106,8 @@ li {
 #results-wrapper {
   background-color: #fff;
   padding: 10px;
+  width: 1000px;
+  margin: 0 auto;
 }
 
 .results {
@@ -105,11 +115,26 @@ li {
 }
 
 .item {
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  border-bottom-color: #536895;
+  border-bottom-width: 1px; 
+  border-bottom-style: solid; 
+  border-bottom-color: #536895; 
   overflow: auto;
   padding: 10px;
+/*  background-color: #dddddd */
+}
+
+.item:hover {
+  background-color: #93a9e9;
+  color: #eeeeee;
+}
+
+.item:hover a {
+  color: #dddddd;
+}
+
+.item-score {
+  min-width: 100px;
+  float: right;
 }
 
 .item-image  {
@@ -122,6 +147,19 @@ li {
   overflow: hidden;
 }
 
+.square {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  background-color: green;
+  color: #ffffff;
+  text-align: center;
+}
+
+.score {
+  margin-top: 45px;
+}
+
 /* Map */
 #map-canvas {
   width: 100%;
@@ -131,13 +169,13 @@ li {
 /* Rounded Boxes */
 
 .rounded-all {
-     -moz-border-radius: 12px; /* FF1+ */
-  -webkit-border-radius: 12px; /* Saf3+, Chrome */
-          border-radius: 12px; /* Opera 10.5, IE 9 */
+     -moz-border-radius: 5px; /* FF1+ */
+  -webkit-border-radius: 5px; /* Saf3+, Chrome */
+          border-radius: 5px; /* Opera 10.5, IE 9 */
 }
 
 .box-shadow {
-	-moz-box-shadow: 0px 7px 10px #1f1f1f;
-  -webkit-box-shadow: 0px 7px 10px #1f1f1f;
-  box-shadow: 0px 7px 10px #1f1f1f;
+	-moz-box-shadow: 0px 0px 10px #1f1f1f;
+  -webkit-box-shadow: 0px 0px 10px #1f1f1f;
+  box-shadow: 0px 0px 10px #1f1f1f;
 }
