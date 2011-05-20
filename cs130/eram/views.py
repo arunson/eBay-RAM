@@ -39,9 +39,22 @@ def search(request):
             # this code is super slow (needs to be parallelized) and is currently useless (returns a list of product score,
             # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
             # modules work and needs to be refactored and whatnot
+            need_title = True 
+            title = item_info["title"]
             for mod in mod_list :
                 exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
-                (score, number_reviews) = mod_communicator.get_score(item_info["title"], "title")
+                # for the first module, tries to find a title that works by cutting down the number of words
+                if ( need_title ) :  
+                    need_title = False
+                    words_in_title = 4
+                    while ( True ) :
+                        title = get_first_n_words(title, words_in_title)
+                        (score, number_reviews) = mod_communicator.get_score(title, "title")
+                        words_in_title = words_in_title - 1
+                        if ( score != -1 or number_reviews != -1 or words_in_title < 2) :
+                            break
+                else :
+                    (score, number_reviews) = mod_communicator.get_score(title, "title")
                 scores.append((score, number_reviews))	
 				
         template_variables = dict()
@@ -123,4 +136,11 @@ def import_modules(path) :
 				module_dictionary.append((mod_name, convert_module_to_class(mod_name)))
 
 	return module_dictionary
+
+def get_first_n_words(string, n) :
+    word_list = string.split(' ')
+    return_val = ""
+    for word in (word_list[:n]) :
+        return_val += word + " "
+    return return_val[:-1]
 
