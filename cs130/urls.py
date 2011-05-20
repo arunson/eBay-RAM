@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from cs130.eram.views import search, ip_location
+from cs130.eram.views import search, ip_location, jquery_test
 
 
 # QUICK AND DIRTY IMPORT FOR DEV ENVIRONMENTS TO SERVE STATIC FILES
@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     (r'^$', search),
     (r'^search/$', search),
     (r'^ip-location/$', ip_location),
+    (r'^jquery-test/$', jquery_test),
 )
 
     # Examples:

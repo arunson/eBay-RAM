@@ -35,7 +35,7 @@ def search(request):
 
             #item_info["sellingStatus"]["currentPrice"] = datetime.datetime.strptime(item_info["sellingStatus"]["timeLeft"], "P%dDT%HH%MM%SS")
 
-            item_list.append(item_info)
+            
             # this code is super slow (needs to be parallelized) and is currently useless (returns a list of product score,
             # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
             # modules work and needs to be refactored and whatnot
@@ -56,14 +56,22 @@ def search(request):
                 else :
                     (score, number_reviews) = mod_communicator.get_score(title, "title")
                 scores.append((score, number_reviews))	
-				
+			
+            item_info['score'] = score
+            #item_info['score'] = 0
+            
+            item_list.append(item_info)
+            
+        # Create a dictionary of variables to pass to the Django template
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
         template_variables['item_list'] = item_list
+        template_variables['scores'] = scores
+        template_variables['location_info'] = get_location(request)
 
         search_form = SearchForm()['q']
         template_variables['search_form'] = search_form
-
+   
         return render_to_response('results.html', template_variables)
     else:
         search_form = SearchForm()['q']
@@ -101,6 +109,19 @@ def ip_location(request):
     
     return render_to_response('ip_location.html', template_variables)
 
+# Returns a dictionary with location info of user
+def get_location(request):
+    config = ConfigParser.ConfigParser()
+    config.read(os.getcwd() + '/eram/module_config.cfg')
+    
+    api_key = config.get('LOCATION API', 'api_key')
+    
+    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&format=json"
+    
+    ipdb_response = urllib.urlopen(url)
+
+    return json.loads(ipdb_response.read())
+    
 # convert_module_to_class(name)
 # input: name of modules (eg productwiki_module)
 # output: name of corresponding class (eg ProductwikiInterface)
@@ -144,3 +165,5 @@ def get_first_n_words(string, n) :
         return_val += word + " "
     return return_val[:-1]
 
+def jquery_test(request):
+    return render_to_response('jquery_test.html')
