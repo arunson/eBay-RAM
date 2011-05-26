@@ -1,4 +1,7 @@
 import json, urllib, ConfigParser
+import urllib2
+import socket # For timeouts
+
 class EbayInterface:
     # __init__(self, config_location)
     # input: location of configuration file
@@ -49,7 +52,13 @@ class EbayInterface:
         #print apiurl + "\n"
 
         # a lot of errors that could come up here, have to deal with them at some point
-        fd = urllib.urlopen(apiurl)
+        try:
+            fd = urllib2.urlopen(apiurl, timeout = 5)
+        except urllib2.URLError, e:
+            # We can return some error value if the connection times out
+            if isinstance(e.reason, socket.timeout):
+                return []
+        
         string_response = fd.read()
         fd.close()    
 
