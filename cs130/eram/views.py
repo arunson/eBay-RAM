@@ -10,6 +10,7 @@ import datetime
 import urllib
 import json
 import ConfigParser
+from django.utils import simplejson
 
 def search(request):
     """
@@ -162,9 +163,9 @@ def map_view(request):
             # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
             # modules work and needs to be refactored and whatnot
             #for mod in mod_list :
-                #exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
+                #exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"
                 #(score, number_reviews) = mod_communicator.get_score(item_info["title"])
-                #scores.append((score, number_reviews))	
+                #scores.append((score, number_reviews))
 				
         template_variables['search_query'] = request.GET['q']
         json_list = simplejson.dumps(item_list)

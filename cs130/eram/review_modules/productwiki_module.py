@@ -28,7 +28,7 @@ class ProductwikiInterface:
 	def get_score_by_url(self, api_url) :
 		fd = urllib.urlopen(api_url)
 		string_response = fd.read()
-		fd.close()	
+		fd.close()
 
 		json_response = json.loads(string_response)
 		first_product = {}
