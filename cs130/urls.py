@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     (r'^search/$', search),
     (r'^ip-location/$', ip_location),
     (r'^jquery-test/$', jquery_test),
+    (r'^map-view/$', map_view),
 )
 
     # Examples:

@@ -121,6 +121,61 @@ def ip_location(request):
     
     return render_to_response('ip_location.html', template_variables)
 
+def map_view(request):
+    
+    config = ConfigParser.ConfigParser()
+    config.read(os.getcwd() + '/eram/module_config.cfg')
+    config_path = os.getcwd() + '/eram/module_config.cfg'
+	
+    api_key = config.get('LOCATION API', 'api_key')
+    
+    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&format=json"
+    
+    ipdb_response = urllib.urlopen(url)
+
+    location_info = json.loads(ipdb_response.read())
+
+    search_form = SearchForm()['q']
+    template_variables = dict()
+    template_variables['search_form'] = search_form
+    template_variables['location_info'] = location_info
+    
+    if 'q' in request.GET and request.GET['q']:
+        ebay_communicator = ebay_module.EbayInterface(config_path)
+        item_ids = ebay_communicator.search(request.GET['q'], 20)
+
+        # This list will be passed to results.html
+        item_list = []
+
+        scores = []
+        for item_id in item_ids :
+            item_info = ebay_communicator.get_item_info_by_id(item_id)
+
+            # Templates cannot handle variable names with leading @ or _
+            item_info["sellingStatus"]["currentPrice"]["value"] = item_info["sellingStatus"]["currentPrice"]["__value__"]
+            item_info["sellingStatus"]["currentPrice"]["currencyId"] = item_info["sellingStatus"]["currentPrice"]["@currencyId"]
+
+            #item_info["sellingStatus"]["currentPrice"] = datetime.datetime.strptime(item_info["sellingStatus"]["timeLeft"], "P%dDT%HH%MM%SS")
+
+            item_list.append(item_info)
+            # this code is super slow (needs to be parallelized) and is currently useless (returns a list of product score,
+            # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
+            # modules work and needs to be refactored and whatnot
+            #for mod in mod_list :
+                #exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
+                #(score, number_reviews) = mod_communicator.get_score(item_info["title"])
+                #scores.append((score, number_reviews))	
+				
+        template_variables['search_query'] = request.GET['q']
+        json_list = simplejson.dumps(item_list)
+        template_variables['json_list'] = json_list
+        template_variables['item_list'] = item_list
+       
+        return render_to_response('map_view.html', template_variables)
+    else:
+        search_form = SearchForm()['q']
+        return render_to_response('search.html', {'search_form': search_form})
+
 # Returns a dictionary with location info of user
 def get_location(request):
     config = ConfigParser.ConfigParser()
