@@ -19,6 +19,3 @@ def get_first_n_words(string, n) :
     for word in (word_list[:n]) :
         return_val += word + " "
     return return_val
-    
-def test(self):
-    return "lol"

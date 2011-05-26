@@ -151,13 +151,27 @@ li {
   width: 100px;
   height: 100px;
   margin: 0 auto;
-  background-color: green;
   color: #ffffff;
   text-align: center;
 }
 
+.high-score {
+  background-color: green;
+}
+
+.med-score {
+  background-color: orange;
+}
+
+.low-score {
+  background-color: red;
+}
+
 .score {
-  margin-top: 45px;
+  width: 100px;
+  height: 100px;
+  padding-top: 40px;
+  font-size: 30px;
 }
 
 /* Map */
