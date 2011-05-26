@@ -4,8 +4,9 @@
   <title>{% block title %}{% endblock %}</title>
   
   {% load static %}
-  <link rel="stylesheet" href="{% get_static_prefix %}style.css" type="text/css"> 
-
+  <link rel="stylesheet" href="{% get_static_prefix %}style.css" type="text/css">
+  <link rel="stylesheet" href="{% get_static_prefix %}jquery-ui.css" type="text/css">
+  
   {% block javascript %} {% endblock %}
 
 </head>
