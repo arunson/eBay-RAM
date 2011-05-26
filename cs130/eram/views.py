@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from cs130.eram.forms import SearchForm
 from cs130.eram.other_modules import ebay_module, ipinfo_module
+from cs130.eram.review_modules import review_module, productwiki_module, bestbuy_module
 from cs130.eram import utils
 import os
 import datetime
@@ -11,13 +12,18 @@ import json
 import ConfigParser
 
 def search(request):
+    """
+    # For dynamically importing modules #
+
     mod_list = import_modules(os.getcwd() + '/eram/review_modules')
     mod_path = 'cs130.eram.review_modules.'
-    config_path = os.getcwd() + '/eram/module_config.cfg'
+
     for mod in mod_list :
         mod_name = mod[0]
         mod_class = mod[1]
         exec 'import ' + mod_path + mod_name
+    """
+    config_path = os.getcwd() + '/eram/module_config.cfg'
 		
     if 'q' in request.GET and request.GET['q']:
         ebay_communicator = ebay_module.EbayInterface(config_path)
@@ -41,26 +47,30 @@ def search(request):
             # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
             # modules work and needs to be refactored and whatnot
             blacklist = ["used", "new", "as-is", "asis", "shipping"]
-            need_title = True 
+
             title = item_info["title"]
-            for mod in mod_list :
-                exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
-                # for the first module, tries to find a title that works by cutting down the number of words
-                if ( need_title ) :  
-                    need_title = False
-                    words_in_title = 4
-                    while ( True ) :
-                        title = utils.get_first_n_words(title, words_in_title)
-                        (score, number_reviews) = mod_communicator.get_score(title, "title")
-                        words_in_title = words_in_title - 1
-                        if ( score != -1 or number_reviews != -1 or words_in_title < 2) :
-                            break
-                else :
-                    (score, number_reviews) = mod_communicator.get_score(title, "title")
-                scores.append((score, number_reviews))	
-			
-            item_info['score'] = score
-            #item_info['score'] = 0
+            module_scores_for_current_item = []
+
+            productwiki_communicator = productwiki_module.ProductwikiInterface(config_path)
+              
+            # reduces title so make search return results #
+            words_in_title = 4
+            while ( True ) :
+                title = utils.get_first_n_words(title, words_in_title)
+                (score, number_reviews) = productwiki_communicator.get_score(title, "title")
+                words_in_title = words_in_title - 1
+                if ( score != -1 or number_reviews != -1 or words_in_title < 2) :
+                    break
+            
+            module_scores_for_current_item.append((score, number_reviews))
+
+            bestbuy_communicator = bestbuy_module.BestbuyInterface(config_path)
+            (score, number_reviews) = bestbuy_communicator.get_score(title, "title")
+            
+            module_scores_for_current_item.append((score, number_reviews))
+            
+            scores.append(compute_weighted_mean(module_scores_for_current_item))
+            item_info['score'] = compute_weighted_mean(module_scores_for_current_item)
             
             item_list.append(item_info)
             
@@ -151,14 +161,28 @@ def convert_module_to_class(name):
 # ---not thoroughly tested---
 # ---could be refactored, etc--- 
 def import_modules(path) :
-	module_dictionary = [] 
-	for i in os.listdir(path) :
-   		if i[-3:] == '.py':
-			mod_name = i[:-3] 
-			if mod_name != 'review_module' and mod_name != '__init__':
-				module_dictionary.append((mod_name, convert_module_to_class(mod_name)))
+    module_dictionary = [] 
+    for i in os.listdir(path) :
+        if i[-3:] == '.py':
+            mod_name = i[:-3] 
+            print mod_name
+            if mod_name != 'review_module' and mod_name != '__init__':
+                module_dictionary.append((mod_name, convert_module_to_class(mod_name)))
 
-	return module_dictionary
+    return module_dictionary
+
+def compute_weighted_mean(score_and_review_list) :
+    weighted_sum = 0
+    total_weights = 0
+    for (score, review_count) in score_and_review_list :
+        if (score != -1) :
+            weighted_sum += int(score) * int(review_count)
+            total_weights += int(review_count)
+    if total_weights == 0 :
+        return -1
+    else :
+        return weighted_sum / total_weights
 
 def jquery_test(request):
     return render_to_response('jquery_test.html')
+
