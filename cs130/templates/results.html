@@ -42,7 +42,7 @@
         {% for item in item_list %}
           <div class="item">
             <div class="item-score">
-              <div class="square"><span class="score">{{item.score}}</span></div>
+              <div class="square {{item.score_color}}"><span class="score">{{item.score}}</span></div>
             </div>  
             <div class="item-image">
               <img src="{{item.galleryURL}}" />
@@ -55,7 +55,8 @@
               Current Price: {{item.sellingStatus.currentPrice.value}} {{item.sellingStatus.currentPrice.currencyId}} <br/>
               Time Left: {{item.sellingStatus.timeLeft}} <br/>
               Product ID: {{item.productId}} <br/>
-              Score: {{item.score}}
+              Score: {{item.score}} <br/>
+              Individual Scores: {{item.individual_scores}}
               </b>
             </div>
           </div>

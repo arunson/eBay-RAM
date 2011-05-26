@@ -1,8 +1,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+from django.utils import simplejson
 from cs130.eram.forms import SearchForm
 from cs130.eram.other_modules import ebay_module, ipinfo_module
-from cs130.eram.review_modules import review_module, productwiki_module, bestbuy_module
+from cs130.eram.review_modules import review_module, productwiki_module, bestbuy_module, ebay_review_module
 from cs130.eram import utils
 import os
 import datetime
@@ -27,50 +28,72 @@ def search(request):
 		
     if 'q' in request.GET and request.GET['q']:
         ebay_communicator = ebay_module.EbayInterface(config_path)
-        item_ids = ebay_communicator.search(request.GET['q'], 20)
+        item_ids = ebay_communicator.search(request.GET['q'], 10)
 
         # This list will be passed to results.html
         item_list = []
-
-        scores = []
+        
+        # Create list of review modules
+        module_list = []
+        module_list.append(productwiki_module.ProductwikiInterface(config_path))
+        module_list.append(bestbuy_module.BestbuyInterface(config_path))
+        ebay_reviewer = ebay_review_module.EbayReviewInterface(config_path)
+        
         for item_id in item_ids :
             item_info = ebay_communicator.get_item_info_by_id(item_id)
 
             # Templates cannot handle variable names with leading @ or _
             item_info["sellingStatus"]["currentPrice"]["value"] = item_info["sellingStatus"]["currentPrice"]["__value__"]
             item_info["sellingStatus"]["currentPrice"]["currencyId"] = item_info["sellingStatus"]["currentPrice"]["@currencyId"]
-
-            #item_info["sellingStatus"]["currentPrice"] = datetime.datetime.strptime(item_info["sellingStatus"]["timeLeft"], "P%dDT%HH%MM%SS")
-
             
-            # this code is super slow (needs to be parallelized) and is currently useless (returns a list of product score,
-            # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
-            # modules work and needs to be refactored and whatnot
+            # Run the title through a filter
+            title = item_info["title"]            
             blacklist = ["used", "new", "as-is", "asis", "shipping"]
-
-            title = item_info["title"]
-            module_scores_for_current_item = []
-
-            productwiki_communicator = productwiki_module.ProductwikiInterface(config_path)
-              
-            # reduces title so make search return results #
-            words_in_title = 4
-            while ( True ) :
-                title = utils.get_first_n_words(title, words_in_title)
-                (score, number_reviews) = productwiki_communicator.get_score(title, "title")
-                words_in_title = words_in_title - 1
-                if ( score != -1 or number_reviews != -1 or words_in_title < 2) :
-                    break
+            title = utils.filter(title, blacklist)
             
-            module_scores_for_current_item.append((score, number_reviews))
+            # TODO: filter results with the word "broken"
+            #       keep a cache of results for the same query
+            # Problem: can't handle input with a star (causes a key error) u\2605
+            
+            # Query each review module for this item
+            search_mode = "slow"
+            search_term = title
+            item_scores = []
+            
+            # Try to get the EPID
+            try:
+                product_id_type = item_info['productId']['@type']
+            except KeyError:
+                product_id_type = None
+            
+            if product_id_type == "ReferenceID":
+                epid = item_info['productId']['__value__']
+                item_scores.append(ebay_reviewer.get_score(epid, "epid"))
+            else:
+                item_scores.append((-1, -1))
+            
+            for review_module in module_list:
+                (score, number_reviews, query) = query_review_module_by_title(review_module, search_term, search_mode)
+                item_scores.append((score, number_reviews))
+                
+                # Change search mode if necessary
+                if (score != -1 or number_reviews != -1):
+                    search_mode = "quick"
+                    search_term = query
+                else:
+                    search_mode = "slow"
+                    search_term = title
 
-            bestbuy_communicator = bestbuy_module.BestbuyInterface(config_path)
-            (score, number_reviews) = bestbuy_communicator.get_score(title, "title")
+            item_info['score'] = compute_weighted_mean(item_scores)
+            item_info['individual_scores'] = item_scores
             
-            module_scores_for_current_item.append((score, number_reviews))
-            
-            scores.append(compute_weighted_mean(module_scores_for_current_item))
-            item_info['score'] = compute_weighted_mean(module_scores_for_current_item)
+            # Assign colors to scores
+            if item_info['score'] >= 66:
+                item_info['score_color'] = "high-score"
+            elif item_info['score'] >= 33:
+                item_info['score_color'] = "med-score"
+            else:
+                item_info['score_color'] = "low-score"
             
             item_list.append(item_info)
             
@@ -78,7 +101,6 @@ def search(request):
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
         template_variables['item_list'] = item_list
-        template_variables['scores'] = scores
         template_variables['location_info'] = get_location(request)
 
         search_form = SearchForm()['q']
@@ -89,6 +111,9 @@ def search(request):
         search_form = SearchForm()['q']
         return render_to_response('search.html', {'search_form': search_form})
 
+def jquery_test(request):
+    return render_to_response('jquery_test.html')
+        
 def ip_location(request):
     #ip = request.META['REMOTE_ADDR']
 #    url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&ip=" + ip + "&format=json"
@@ -238,6 +263,26 @@ def compute_weighted_mean(score_and_review_list) :
     else :
         return weighted_sum / total_weights
 
-def jquery_test(request):
-    return render_to_response('jquery_test.html')
 
+# Returns the score, number of reviews, and last used query        
+def query_review_module_by_title(review_module, title, mode) :
+    # In quick mode, do not attempt to guess what query would work.
+    if mode == "quick":
+        number_of_tries = 1
+    else:
+        number_of_tries = 3
+    
+    print "\nSearch Mode: " + mode
+    
+    # This is getting redundant
+    number_of_words = 4
+    while (number_of_tries > 0) :
+        query = utils.get_first_n_words(title, number_of_words)
+        print "\nSearch Term: " + query
+        (score, reviews_count) = review_module.get_score(query, "title")
+        number_of_tries -= 1
+        number_of_words -= 1
+        if ( score != -1 or reviews_count != -1 ):
+            break
+            
+    return (score, reviews_count, query)
