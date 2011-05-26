@@ -11,12 +11,9 @@
   </script>
   <script type="text/javascript">
   
-      var json_list = {{json_list|safe}};
+	var json_list = {{json_list|safe}};
 	var map;
 	var markerArray = [];
-
-      var template = '<div class="item"><div class="item-image"><img src="{{item_list.0.galleryURL}}"/></div><div class="item-info"><h2><a href="{{item_list.0.viewItemURL}}">{{item_list.0.title}}</a><br/></h2>Location: {{item_list.0.location}} <br/><br/><b>Current Price: {{item_list.0.sellingStatus.currentPrice.value}} {{item_list.0.sellingStatus.currentPrice.currencyId}} <br/>Time Left: {{item_list.0.sellingStatus.timeLeft}} <br/>Product ID: {{item_list.0.productId}}</b></div></div>';
-
   
     function initialize(latitude, longitude, countryName)
 	{
@@ -31,14 +28,26 @@
 		};
 		
 		map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
-	
+
+		var geocoder = new google.maps.Geocoder();
+		 
 		for(var i in json_list)
 		{
-			var markerLatLng = new google.maps.LatLng(latitude+(i/2), longitude);
-                
-			create_marker(markerLatLng, countryName);
-			display_marker(markerArray[i], 
-					'<div class="item"><div class="item-image"><img src="' + json_list[i].galleryURL + '"/></div><div class="item-info"><h2><a href="' + json_list[i].viewItemURL + '">' + json_list[i].title + '</a><br/></h2>Location: ' + json_list[i].location + '<br/><br/><b>Current Price:' +  json_list[i].sellingStatus.currentPrice.value + json_list[i].sellingStatus.currentPrice.currencyId + '<br/>Time Left: ' + json_list[i].sellingStatus.timeLeft + '<br/>Product ID:' + json_list[i].productId.toString(10) + '</b></div></div>');
+			 var position = new google.maps.LatLng();
+			 geocoder.geocode( {'address':json_list[i].location},function(results,status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+						position = results[0].geometry.location;
+					}
+				    if (status != google.maps.GeocoderStatus.OK) {
+						//alert(status);
+						}
+						
+			});
+			
+			create_marker(position,json_list[i].title);
+			
+			display_marker(markerArray[i],'<div class="item"><div class="item-image"><img src="' + json_list[i].galleryURL + '"/></div><div class="item-info"><h2><a href="' + json_list[i].viewItemURL + '">' + json_list[i].title + '</a><br/></h2>Location: ' + json_list.location + '<br/><br/><b>Current Price:' +  json_list[i].sellingStatus.currentPrice.value + json_list[i].sellingStatus.currentPrice.currencyId + '<br/>Time Left: ' + json_list[i].sellingStatus.timeLeft + '</div></div>');
+			
 		}
 
 	 }
