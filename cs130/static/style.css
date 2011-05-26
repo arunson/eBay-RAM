@@ -168,7 +168,10 @@ li {
 }
 
 .score {
-  margin-top: 45px;
+  width: 100px;
+  height: 100px;
+  padding-top: 40px;
+  font-size: 30px;
 }
 
 /* Map */

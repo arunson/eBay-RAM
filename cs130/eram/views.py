@@ -5,6 +5,8 @@ from cs130.eram.forms import SearchForm
 from cs130.eram.other_modules import ebay_module, ipinfo_module
 from cs130.eram.review_modules import review_module, productwiki_module, bestbuy_module, ebay_review_module
 from cs130.eram import utils
+from operator import itemgetter # for sorting items
+
 import os
 import datetime
 # ip-location
@@ -97,6 +99,14 @@ def search(request):
             
             item_list.append(item_info)
             
+        # Sort the item list by score
+        item_list = sorted(item_list, key=itemgetter('score'), reverse=True)
+        
+        # Convert -1s to N/A (if only there was a faster way than another linear pass...)
+        for item in item_list:
+            if item['score'] == -1:
+                item['score'] = "N/A"
+        
         # Create a dictionary of variables to pass to the Django template
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
