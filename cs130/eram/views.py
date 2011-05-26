@@ -8,6 +8,28 @@ import datetime
 import urllib
 import json
 import ConfigParser
+import threading
+
+
+class Item_Threads(threading.Thread):
+    def __init__(self, item_info, mod_list, mod_path, mod_class, config_path):
+        threading.Thread.__init__(self)
+	self.item_info = item_info
+	self.mod_list = mod_list
+	self.mod_path = mod_path
+	self.mod_class = mod_class
+	self.config_path = config_path
+	self.scores = []
+
+    def run(self):
+        for mod in mod_list :
+            exec "mod_communicator = " + self.mod_path + self.mod_name + "." + self.mod_class + "(\'" + self.config_path + "\')"  
+            (score, number_reviews) = mod_communicator.get_score(self.item_info["title"], "title")
+            self.scores.append((score, number_reviews))
+	    
+    def get_scores(self):
+        return self.scores	
+
 
 def search(request):
     mod_list = import_modules(os.getcwd() + '/eram/review_modules')
@@ -24,9 +46,14 @@ def search(request):
 
         # This list will be passed to results.html
         item_list = []
-
-        scores = []
-        for item_id in item_ids :
+	scores = []
+	
+	# Item threads
+	item_threads = []
+	
+	counter = 0
+	
+        for item_id in item_ids:
             item_info = ebay_communicator.get_item_info_by_id(item_id)
 
             # Templates cannot handle variable names with leading @ or _
@@ -36,6 +63,11 @@ def search(request):
             #item_info["sellingStatus"]["currentPrice"] = datetime.datetime.strptime(item_info["sellingStatus"]["timeLeft"], "P%dDT%HH%MM%SS")
 
             item_list.append(item_info)
+	    
+	    #item_threads.append(Item_Threads(item_info, mod_list, mod_path, mod_class, config_path))
+	    #item_threads[counter].start()
+	    #counter = counter + 1
+	    
             # this code is super slow (needs to be parallelized) and is currently useless (returns a list of product score,
             # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
             # modules work and needs to be refactored and whatnot
@@ -67,8 +99,17 @@ def ip_location(request):
     
     url = "http://api.ipinfodb.com/v3/ip-city/?key=" + api_key + "&format=json"
     
+    #thread_t = threading.Thread(target=threaded_url,args=[url])
+    #thread_t = threading.Thread(target=urllib.urlopen,args=[url])
+    #thread_t.start();
+    #ipdb_response = thread_t.run();
+    
+    #thread_t = ThreadUrl(url)
+    #ipdb_response = thread_t.run()
+    
     ipdb_response = urllib.urlopen(url)
-
+    
+    #thread_t.join();
     location_info = json.loads(ipdb_response.read())
 
     search_form = SearchForm()['q']
@@ -87,6 +128,9 @@ def ip_location(request):
     #time_zone = location_info["timeZone"]
     
     return render_to_response('ip_location.html', template_variables)
+    
+def threaded_url(url):
+    ipdb_response = urllib.urlopen(url)
 
 # convert_module_to_class(name)
 # input: name of modules (eg productwiki_module)
