@@ -64,17 +64,21 @@ def search(request):
 
             item_list.append(item_info)
 	    
-	    #item_threads.append(Item_Threads(item_info, mod_list, mod_path, mod_class, config_path))
-	    #item_threads[counter].start()
-	    #counter = counter + 1
+	    item_threads.append(Item_Threads(item_info, mod_list, mod_path, mod_class, config_path))
+	    item_threads[counter].start()
+	    counter = counter + 1
 	    
             # this code is super slow (needs to be parallelized) and is currently useless (returns a list of product score,
             # review number tuples from every module for every item in a pretty bad order).  It's just here to demonstrate how 
             # modules work and needs to be refactored and whatnot
-            for mod in mod_list :
-                exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
-                (score, number_reviews) = mod_communicator.get_score(item_info["title"], "title")
-                scores.append((score, number_reviews))	
+            #for mod in mod_list :
+                #exec "mod_communicator = " + mod_path + mod_name + "." + mod_class + "(\'" + config_path + "\')"  
+                #(score, number_reviews) = mod_communicator.get_score(item_info["title"], "title")
+                #scores.append((score, number_reviews))
+		
+	for t in item_threads:
+	    t.join()
+	    scores.append(t.get_scores())
 				
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
