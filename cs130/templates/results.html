@@ -92,9 +92,10 @@
           var losAngeles = new google.maps.LatLng(34.0522222, -118.2427778);
           var browserSupportFlag = new Boolean();
           var infowindow = new google.maps.InfoWindow();
+          var json_list = {{json_list|safe}};
           function initialize() {
             var myOptions = {
-              zoom: 10,
+              zoom: 4,
               mapTypeId: google.maps.MapTypeId.ROADMAP
             };
             map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
@@ -114,13 +115,11 @@
             }
             // TODO: Provide other backup methods
             		
-            // Create markers    
+            // Create markers
+            var geocoder = new google.maps.Geocoder();
             for(var i in json_list) {
-              var markerLatLng = new google.maps.LatLng(latitude+(i/2), longitude);
-                        
-              create_marker(markerLatLng, countryName);
-              display_marker(markerArray[i], 
-                  '<div class="item"><div class="item-image"><img src="' + json_list[i].galleryURL + '"/></div><div class="item-info"><h2><a href="' + json_list[i].viewItemURL + '">' + json_list[i].title + '</a><br/></h2>Location: ' + json_list[i].location + '<br/><br/><b>Current Price:' +  json_list[i].sellingStatus.currentPrice.value + json_list[i].sellingStatus.currentPrice.currencyId + '<br/>Time Left: ' + json_list[i].sellingStatus.timeLeft + '<br/>Product ID:' + json_list[i].productId.toString(10) + '</b></div></div>');
+              // Pause for 200 ms in between geocoder calls (this method doesn't work...)
+              setTimeout(codeLocation(geocoder, json_list[i].location, i), 200);
             }
           }
           
@@ -131,19 +130,31 @@
             map.setCenter(initialLocation);
           }
           
-          function create_marker(location, city) {
-            marker = new google.maps.Marker({
-              position: location,
-              map: map,
-              title: city
+          function codeLocation(geocoder, location, json_iterator) {
+            geocoder.geocode( {'address':location}, 
+              function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                  create_marker(results[0].geometry.location, location, json_iterator);
+                }
+                else {
+                  alert(status);
+                }    
               });
-              
-            markerArray.push(marker);
           }
           
-          function display_marker(marker, title) {
+          function create_marker(location, title, json_iterator) {
+            var marker = new google.maps.Marker({
+              position: location,
+              map: map,
+              title: title
+              });
+            
+            display_marker(marker, '<div class="item"><div class="item-image"><img src="' + json_list[json_iterator].galleryURL + '"/></div><div class="item-info"><h2><a href="' + json_list[json_iterator].viewItemURL + '">' + json_list[json_iterator].title + '</a><br/></h2>Location: ' + json_list.location + '<br/><br/><b>Current Price:' +  json_list[json_iterator].sellingStatus.currentPrice.value + json_list[json_iterator].sellingStatus.currentPrice.currencyId + '<br/>Time Left: ' + json_list[json_iterator].sellingStatus.timeLeft + '</div></div>');
+          }
+          
+          function display_marker(marker, markerContent) {
             var infoWindow = new google.maps.InfoWindow({
-                  content: title
+                  content: markerContent
               });
        
             google.maps.event.addListener(marker, 'click', function(){

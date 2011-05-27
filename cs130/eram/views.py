@@ -129,7 +129,7 @@ def search(request):
 		
     if 'q' in request.GET and request.GET['q']:
         ebay_communicator = ebay_module.EbayInterface(config_path)
-        item_ids = ebay_communicator.search(request.GET['q'], 1)
+        item_ids = ebay_communicator.search(request.GET['q'], 5)
 
         # This list will be passed to results.html
         item_list = []
@@ -212,8 +212,10 @@ def search(request):
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
         template_variables['item_list'] = item_list
-        template_variables['location_info'] = get_location(request)
-
+        #template_variables['location_info'] = get_location(request)
+        json_list = simplejson.dumps(item_list)
+        template_variables['json_list'] = json_list
+        
         search_form = SearchForm()['q']
         template_variables['search_form'] = search_form
    
@@ -264,7 +266,9 @@ def search_threaded(request):
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
         template_variables['item_list'] = item_list
-        template_variables['location_info'] = get_location(request)
+        #template_variables['location_info'] = get_location(request)
+        json_list = simplejson.dumps(item_list)
+        template_variables['json_list'] = json_list
 
         search_form = SearchForm()['q']
         template_variables['search_form'] = search_form
@@ -377,7 +381,9 @@ def search_threaded2(request):
         template_variables = dict()
         template_variables['search_query'] = request.GET['q']
         template_variables['item_list'] = item_list
-        template_variables['location_info'] = get_location(request)
+        #template_variables['location_info'] = get_location(request)
+        json_list = simplejson.dumps(item_list)
+        template_variables['json_list'] = json_list
 
         search_form = SearchForm()['q']
         template_variables['search_form'] = search_form
