@@ -70,7 +70,7 @@
         <script type="text/javascript">
         //<![CDATA[
         $(document).ready(function() {
-          var user_longitude = "{{location_info.longitude}}";
+          /*var user_longitude = "{{location_info.longitude}}";
           var user_latitude = "{{location_info.latitude}}";
           function initialize(latitude, longitude) {
             var latlng = new google.maps.LatLng(latitude, longitude);
@@ -85,6 +85,75 @@
               $('#map-tab').css({'display':'block'});
               initialize(user_latitude, user_longitude);
           
+          });*/
+          
+          var map;
+          var initialLocation;
+          var losAngeles = new google.maps.LatLng(34.0522222, -118.2427778);
+          var browserSupportFlag = new Boolean();
+          var infowindow = new google.maps.InfoWindow();
+          function initialize() {
+            var myOptions = {
+              zoom: 10,
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+            map = new google.maps.Map(document.getElementById("map-canvas"), myOptions);
+            
+            // Try locating the user using W3C Geolocation
+            if(navigator.geolocation) {
+              browserSupportFlag = true;
+              navigator.geolocation.getCurrentPosition(function(position) {
+                initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+                map.setCenter(initialLocation);
+                infowindow.setContent("You are here");
+                infowindow.setPosition(initialLocation);
+                infowindow.open(map);
+              }, function() {
+                handleNoGeolocation(browserSupportFlag);
+              });
+            }
+            // TODO: Provide other backup methods
+            		
+            // Create markers    
+            for(var i in json_list) {
+              var markerLatLng = new google.maps.LatLng(latitude+(i/2), longitude);
+                        
+              create_marker(markerLatLng, countryName);
+              display_marker(markerArray[i], 
+                  '<div class="item"><div class="item-image"><img src="' + json_list[i].galleryURL + '"/></div><div class="item-info"><h2><a href="' + json_list[i].viewItemURL + '">' + json_list[i].title + '</a><br/></h2>Location: ' + json_list[i].location + '<br/><br/><b>Current Price:' +  json_list[i].sellingStatus.currentPrice.value + json_list[i].sellingStatus.currentPrice.currencyId + '<br/>Time Left: ' + json_list[i].sellingStatus.timeLeft + '<br/>Product ID:' + json_list[i].productId.toString(10) + '</b></div></div>');
+            }
+          }
+          
+          // In case geolocation completely fails
+          function handleNoGeolocation(errorFlag) {
+            alert("We could not locate you on the map.");
+            initialLocation = losAngeles;
+            map.setCenter(initialLocation);
+          }
+          
+          function create_marker(location, city) {
+            marker = new google.maps.Marker({
+              position: location,
+              map: map,
+              title: city
+              });
+              
+            markerArray.push(marker);
+          }
+          
+          function display_marker(marker, title) {
+            var infoWindow = new google.maps.InfoWindow({
+                  content: title
+              });
+       
+            google.maps.event.addListener(marker, 'click', function(){
+                  infoWindow.open(map, marker)
+            });
+          }
+          
+          $('#load-map').click(function() {
+              $('#map-tab').css({'display':'block'});
+              initialize();
           });
         });
         //]]>

@@ -128,7 +128,7 @@ def search(request):
 		
     if 'q' in request.GET and request.GET['q']:
         ebay_communicator = ebay_module.EbayInterface(config_path)
-        item_ids = ebay_communicator.search(request.GET['q'], 10)
+        item_ids = ebay_communicator.search(request.GET['q'], 1)
 
         # This list will be passed to results.html
         item_list = []
