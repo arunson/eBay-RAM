@@ -34,7 +34,10 @@ class ProductwikiInterface(review_module.ReviewModule):
         string_response = fd.read()
         fd.close()	
 
-        json_response = json.loads(string_response)
+        try:
+            json_response = json.loads(string_response)
+        except ValueError:
+            return (-1, -1)
         first_product = {}
         if ("products" in json_response and json_response["products"] != None ):
             item_list = json_response["products"]	

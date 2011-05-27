@@ -43,12 +43,19 @@ class EbayReviewInterface(review_module.ReviewModule):
         string_response = fd.read()
         fd.close()
         
-        json_response = json.loads(string_response)
-        if (json_response['ReviewCount'] > 0):
-            score = self.normalize_score(json_response['ReviewDetails']['AverageRating'])
-            num_reviews = json_response['ReviewCount']
-            return (score, num_reviews)
-        else:
+        try:
+            json_response = json.loads(string_response)
+        except ValueError:
+            return (-1, -1)
+            
+        try:
+            if (json_response['ReviewCount'] > 0):
+                score = self.normalize_score(json_response['ReviewDetails']['AverageRating'])
+                num_reviews = json_response['ReviewCount']
+                return (score, num_reviews)
+            else:
+                return (-1, -1)
+        except KeyError:
             return (-1, -1)
         
     def normalize_score(self, score) :

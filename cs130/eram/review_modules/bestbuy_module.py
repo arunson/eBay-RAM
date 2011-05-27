@@ -33,7 +33,10 @@ class BestbuyInterface(review_module.ReviewModule):
 
     def get_score_by_url(self, api_url) :
         string_response = self.safe_search(api_url)
-        json_response = json.loads(string_response)
+        try:
+            json_response = json.loads(string_response)
+        except ValueError:
+            return (-1, -1)
         first_product = {}
         if ("products" in json_response and json_response["products"] != None and json_response["products"] != []):
             item_list = json_response["products"]	
