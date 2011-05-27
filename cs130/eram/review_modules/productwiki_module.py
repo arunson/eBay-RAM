@@ -1,4 +1,4 @@
-import json, urllib, ConfigParser
+import json, urllib, ConfigParser, urllib2
 import review_module
 class ProductwikiInterface:
     supported_types = ["upc", "mpn", "title"]
@@ -38,9 +38,15 @@ class ProductwikiInterface:
             first_product["number_of_reviews"] = -1
 
     def get_score_by_url(self, api_url) :
-        fd = urllib.urlopen(api_url)
+        try:
+            fd = urllib2.urlopen(api_url, timeout = 5)
+        except urllib2.URLError, e:
+            if isinstance(e.reason, socket.timeout):
+                print self.name + " request timed out"
+                fd.close()
+                return (-1, -1)
         string_response = fd.read()
-        fd.close()	
+        fd.close()
 
         try:
             json_response = json.loads(string_response)

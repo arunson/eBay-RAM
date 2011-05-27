@@ -38,8 +38,15 @@ class EbayReviewInterface(review_module.ReviewModule):
         
     # Current assumption: called by get_score_by_epid (meaning unique results)
     def get_score_by_url(self, api_url):
-        print api_url
-        fd = urllib2.urlopen(api_url)
+        #print api_url
+        
+        try:
+            fd = urllib2.urlopen(api_url, timeout = 5)
+        except urllib2.URLError, e:
+            if isinstance(e.reason, socket.timeout):
+                print self.name + " request timed out"
+                fd.close()
+                return (-1, -1)
         string_response = fd.read()
         fd.close()
         

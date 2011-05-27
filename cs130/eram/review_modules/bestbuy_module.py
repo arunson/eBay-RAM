@@ -1,4 +1,4 @@
-import json, urllib, ConfigParser
+import json, urllib, ConfigParser, urllib2
 import review_module
 import time
 class BestbuyInterface(review_module.ReviewModule):
@@ -63,7 +63,7 @@ class BestbuyInterface(review_module.ReviewModule):
         api_url += urllib.quote("(search=" + url_query + ")")
         api_url += "?apiKey=" + self.api_key
         api_url += "&format=" + self.response_format
-        print api_url
+        #print api_url
         return self.get_score_by_url(api_url)
         
     def normalize_score(self, score) :
@@ -77,7 +77,13 @@ class BestbuyInterface(review_module.ReviewModule):
         return review_count
     def safe_search(self, api_url) :
         time.sleep(1. / self.call_limit_per_second)
-        fd = urllib.urlopen(api_url)
+        try:
+            fd = urllib2.urlopen(api_url, timeout = 5)
+        except urllib2.URLError, e:
+            if isinstance(e.reason, socket.timeout):
+                print self.name + " request timed out"
+                fd.close()
+                return (-1, -1)
         string_response = fd.read()
-        fd.close()	
+        fd.close()
         return string_response
