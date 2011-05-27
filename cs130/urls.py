@@ -11,11 +11,11 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = patterns('', 
     (r'^$', search),
-    (r'^search/$', search),
+    (r'^search2/$', search),
     (r'^ip-location/$', ip_location),
     (r'^jquery-test/$', jquery_test),
     (r'^map-view/$', map_view),
-    (r'^search2/$', search_threaded2),
+    (r'^search/$', search_threaded2),
 )
 
     # Examples:

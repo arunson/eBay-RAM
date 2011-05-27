@@ -129,7 +129,7 @@ def search(request):
 		
     if 'q' in request.GET and request.GET['q']:
         ebay_communicator = ebay_module.EbayInterface(config_path)
-        item_ids = ebay_communicator.search(request.GET['q'], 5)
+        item_ids = ebay_communicator.search(request.GET['q'], 20)
 
         # This list will be passed to results.html
         item_list = []
@@ -177,7 +177,7 @@ def search(request):
             for review_module in module_list:
                 (score, number_reviews, query) = query_review_module_by_title(review_module, search_term, search_mode)
                 item_scores.append((score, number_reviews))
-                
+                """
                 # Change search mode if necessary
                 if (score != -1 or number_reviews != -1):
                     search_mode = "quick"
@@ -185,7 +185,7 @@ def search(request):
                 else:
                     search_mode = "slow"
                     search_term = title
-
+                """
             item_info['score'] = compute_weighted_mean(item_scores)
             item_info['individual_scores'] = item_scores
             
@@ -326,7 +326,7 @@ def search_threaded2(request):
         # Create list of review modules
         module_list = []
         module_list.append(productwiki_module.ProductwikiInterface(config_path))
-        #module_list.append(bestbuy_module.BestbuyInterface(config_path))
+        module_list.append(bestbuy_module.BestbuyInterface(config_path))
         ebay_reviewer = ebay_review_module.EbayReviewInterface(config_path)
         
         thread_list = []
