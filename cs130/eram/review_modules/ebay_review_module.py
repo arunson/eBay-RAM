@@ -43,10 +43,10 @@ class EbayReviewInterface(review_module.ReviewModule):
         try:
             fd = urllib2.urlopen(api_url, timeout = 5)
         except urllib2.URLError, e:
-            if isinstance(e.reason, socket.timeout):
-                print self.name + " request timed out"
-                fd.close()
-                return (-1, -1)
+            #if isinstance(e.reason, socket.timeout):
+            print self.name + " request timed out"
+            #fd.close()
+            return (-1, -1)
         string_response = fd.read()
         fd.close()
         

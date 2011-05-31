@@ -326,7 +326,7 @@ def search_threaded2(request):
         # Create list of review modules
         module_list = []
         module_list.append(productwiki_module.ProductwikiInterface(config_path))
-        module_list.append(bestbuy_module.BestbuyInterface(config_path))
+        #module_list.append(bestbuy_module.BestbuyInterface(config_path))
         ebay_reviewer = ebay_review_module.EbayReviewInterface(config_path)
         
         thread_list = []
@@ -361,11 +361,15 @@ def search_threaded2(request):
             item_info['individual_scores'] = item_scores
             
             # Assign colors to scores
-            if item_info['score'] >= 66:
-                item_info['score_color'] = "high-score"
-            elif item_info['score'] >= 33:
-                item_info['score_color'] = "med-score"
-            else:
+            try:
+                if item_info['score'] >= 66:
+                    item_info['score_color'] = "high-score"
+                elif item_info['score'] >= 33:
+                    item_info['score_color'] = "med-score"
+                else:
+                    item_info['score_color'] = "low-score"
+            except KeyError:
+                # If there was no score then it should be "low-score"
                 item_info['score_color'] = "low-score"
         
         
@@ -374,7 +378,10 @@ def search_threaded2(request):
         
         # Convert -1s to N/A (if only there was a faster way than another linear pass...)
         for item in item_list:
-            if item['score'] == -1:
+            try:
+                if item['score'] == -1:
+                    item['score'] = "N/A"
+            except KeyError:
                 item['score'] = "N/A"
         
         # Create a dictionary of variables to pass to the Django template

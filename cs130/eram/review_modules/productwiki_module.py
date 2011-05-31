@@ -11,6 +11,7 @@ class ProductwikiInterface:
         self.api_site = config.get('PRODUCTWIKI API', 'api_site')
         self.api_key = config.get('PRODUCTWIKI API', 'api_key')
         self.response_format = config.get('PRODUCTWIKI API', 'response_format')
+        self.name = "ProductWiki"
             
 	# get_score(self, query)
 	# input: query to productwiki
@@ -41,10 +42,10 @@ class ProductwikiInterface:
         try:
             fd = urllib2.urlopen(api_url, timeout = 5)
         except urllib2.URLError, e:
-            if isinstance(e.reason, socket.timeout):
-                print self.name + " request timed out"
-                fd.close()
-                return (-1, -1)
+            #if isinstance(e.reason, socket.timeout):
+            print self.name + " request timed out"
+            #fd.close()
+            return (-1, -1)
         string_response = fd.read()
         fd.close()
 
