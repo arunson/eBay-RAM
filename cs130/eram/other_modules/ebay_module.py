@@ -18,9 +18,7 @@ class EbayInterface:
     # __unlist(self, data)
     # input: data in json format returned by ebay api call
     # output: same data, all lists of 1 length changed to the containing item
-    # reason: without it, there is a need to use [0] a lot when trying
-    # to access ebay information
-    # ---not tested thoroughly---
+    # without it, there is a need to use [0] a lot when trying
     def __unlist(self, data):
         if (isinstance(data, list) and (len(data) == 1)):
             return self.__unlist(data[0])
@@ -36,8 +34,6 @@ class EbayInterface:
     # search(self, request, num_responses)
     # input: search term, max number of responses that should be returned by ebay
     # output: list of item ids for each item returned by the api call
-    # ---not robust---
-    # ---could do with refactoring, etc---
     def search(self, request, num_responses):
         query = urllib.quote(request)
     
@@ -51,7 +47,7 @@ class EbayInterface:
         apiurl += "&paginationInput.entriesPerPage=" + str(num_responses)
         #print apiurl + "\n"
 
-        # a lot of errors that could come up here, have to deal with them at some point
+        # queries ebay
         try:
             fd = urllib2.urlopen(apiurl, timeout = 5)
         except urllib2.URLError, e:
@@ -63,11 +59,10 @@ class EbayInterface:
         fd.close()    
 
         json_response = json.loads(string_response)
-        #print json_response
+        # gets items returned by query, puts them in a convenient dictionary format to return
         response = json_response["findItemsByKeywordsResponse"][0]["searchResult"][0]["item"]
         id_list = []
         self.item_dict = {}    
-        #print response 
         for i in response :
             item_id = i["itemId"][0]
             self.item_dict[item_id] = i
@@ -122,7 +117,6 @@ class EbayInterface:
     # input: item id previously returned by ebay's api via search
     # output: json formatted information for that item
     # reason: access to ebay information
-    # ---could do with refactoring, etc---
     def get_item_info_by_id(self, item_id) :
         return self.item_dict[item_id]
 
