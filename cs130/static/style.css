@@ -54,8 +54,15 @@ li {
 
 #footer {
   background-color: #26466D;
-  min-height: 150px;
+  min-height: 50px;
+  color: #ffffff;
 }
+
+.tech-notice {
+  width: 500px;
+  margin: 15px auto;
+}
+
 
 #main-content {
   height: 100%;
@@ -103,6 +110,7 @@ li {
 }
 
 /* Results */
+#content-wrapper, 
 #results-wrapper {
   background-color: #fff;
   padding: 10px;

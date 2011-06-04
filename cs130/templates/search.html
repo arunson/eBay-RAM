@@ -4,7 +4,7 @@
 
 {% block title %}eRAM{% endblock %}
 
-{% block content %}
+{% block header %}
 
 <div class="main-search-box">
   <img src="{% get_static_prefix %}logo_large.png" class="logo-large" />
@@ -16,4 +16,17 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block content %}
+<div id="content-wrapper">
+<h2>How to use eBay Review Aggregator and Matcher</h2>
+<p>
+Simply type in a general search term and we will display a ranked list to you. 
+The higher the score, the more we think it will be a good match for you!
+</p>
+<p>
+For starters, try searching for "digital camera".
+</p>
+</div>
 {% endblock %}
