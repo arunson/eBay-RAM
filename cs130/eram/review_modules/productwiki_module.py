@@ -16,8 +16,6 @@ class ProductwikiInterface:
 	# get_score(self, query)
 	# input: query to productwiki
 	# output: tuple containing total score (below 100) and number of reviews
-	# ---not thoroughly tested---
-	# ---not robust---
     def get_score(self, query, query_type):
         if (query_type not in self.supported_types) :
             return (-1, -1)
@@ -29,6 +27,7 @@ class ProductwikiInterface:
     def get_name(self):
         return self.name
 
+	"""
         json_response = json.loads(string_response)
         first_product = {}
         if ("products" in json_response and json_response["products"] != None ):
@@ -37,7 +36,11 @@ class ProductwikiInterface:
         else:
             first_product["proscore"] = -1
             first_product["number_of_reviews"] = -1
+	"""
 
+	# get_score_by_url(self, api_url)
+	# input: api_url for productwiki search
+	# output: tuple score for first item
     def get_score_by_url(self, api_url) :
         try:
             fd = urllib2.urlopen(api_url, timeout = 5)
@@ -53,6 +56,7 @@ class ProductwikiInterface:
             json_response = json.loads(string_response)
         except ValueError:
             return (-1, -1)
+		# get score and review count for first item
         first_product = {}
         if ("products" in json_response and json_response["products"] != None ):
             item_list = json_response["products"]	
@@ -64,6 +68,9 @@ class ProductwikiInterface:
         return (first_product["proscore"], first_product["number_of_reviews"])
 
 
+	# get_score_by_product(self, query, query_type)
+	# input: api query, query type (MPN, UPC, etc)
+	# output: tuple score
     def get_score_by_product(self, query, query_type) :
         url_query = urllib.quote(query)
         api_url = self.api_site + "?"
@@ -74,6 +81,9 @@ class ProductwikiInterface:
         api_url += "&key=" + self.api_key
         return self.get_score_by_url(api_url)
 
+    # get_score_by_search(self, query) :
+	# input: productiwki query
+	# output: tuple score for first item returned
     def get_score_by_search(self, query) :
         url_query = urllib.quote(query)
         api_url = self.api_site + "?"
