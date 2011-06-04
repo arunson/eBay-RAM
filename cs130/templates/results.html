@@ -97,7 +97,6 @@
                 handleNoGeolocation(browserSupportFlag);
               });
             }
-            // TODO: Provide other backup methods
             		
             // Create markers
             var geocoder = new google.maps.Geocoder();
@@ -116,7 +115,7 @@
                   // Call geocoder with a time delay
                   i++;
                   if (json_list.length > i) {
-                    setTimeout(geocoderFunction, 200);
+                    setTimeout(geocoderFunction, 500);
                   }
               });
             }

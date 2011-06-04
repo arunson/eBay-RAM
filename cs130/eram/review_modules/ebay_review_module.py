@@ -45,16 +45,16 @@ class EbayReviewInterface(review_module.ReviewModule):
         except urllib2.URLError, e:
             #if isinstance(e.reason, socket.timeout):
             print self.name + " request timed out"
-            #fd.close()
             return (-1, -1)
         string_response = fd.read()
         fd.close()
         
+        # Improper JSON responses is interpreted as having no reviews.
         try:
             json_response = json.loads(string_response)
         except ValueError:
             return (-1, -1)
-            
+        
         try:
             if (json_response['ReviewCount'] > 0):
                 score = self.normalize_score(json_response['ReviewDetails']['AverageRating'])

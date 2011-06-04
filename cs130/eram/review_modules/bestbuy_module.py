@@ -92,7 +92,7 @@ class BestbuyInterface(review_module.ReviewModule):
             fd = urllib2.urlopen(api_url, timeout = 5)
         except urllib2.URLError, e:
             print self.name + " request timed out"
-            return (-1, -1)
+            return ""
         string_response = fd.read()
         fd.close()
         return string_response

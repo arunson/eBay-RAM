@@ -4,7 +4,6 @@
 
 # Specific files #
 ##################
-manage.py
 settings.py
 
 # Configuration Files #

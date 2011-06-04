@@ -47,7 +47,6 @@ class ProductwikiInterface:
         except urllib2.URLError, e:
             #if isinstance(e.reason, socket.timeout):
             print self.name + " request timed out"
-            #fd.close()
             return (-1, -1)
         string_response = fd.read()
         fd.close()
@@ -56,7 +55,8 @@ class ProductwikiInterface:
             json_response = json.loads(string_response)
         except ValueError:
             return (-1, -1)
-		# get score and review count for first item
+		
+        # get score and review count for first item
         first_product = {}
         if ("products" in json_response and json_response["products"] != None ):
             item_list = json_response["products"]	
