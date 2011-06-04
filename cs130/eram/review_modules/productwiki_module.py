@@ -1,6 +1,6 @@
 import json, urllib, ConfigParser, urllib2
 import review_module
-class ProductwikiInterface:
+class ProductwikiInterface(review_module.ReviewModule):
     supported_types = ["upc", "mpn", "title"]
 	# __init__(self, config_location)
 	# input: location of configuration file
