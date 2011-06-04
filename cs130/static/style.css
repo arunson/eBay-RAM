@@ -120,15 +120,14 @@ li {
   border-bottom-color: #536895; 
   overflow: auto;
   padding: 10px;
-/*  background-color: #dddddd */
 }
 
-.item:hover {
+.results .item:hover {
   background-color: #93a9e9;
   color: #eeeeee;
 }
 
-.item:hover a {
+.results .item:hover a {
   color: #dddddd;
 }
 
@@ -155,6 +154,14 @@ li {
   text-align: center;
 }
 
+.small-square {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  color: #ffffff;
+  text-align: center;
+}
+
 .high-score {
   background-color: green;
 }
@@ -172,6 +179,13 @@ li {
   height: 100px;
   padding-top: 40px;
   font-size: 30px;
+}
+
+.small-score {
+  width: 70px;
+  height: 70px;
+  padding-top: 25px;
+  font-size: 24px;
 }
 
 /* Map */
